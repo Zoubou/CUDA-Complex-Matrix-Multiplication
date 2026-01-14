@@ -6,7 +6,7 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 
-#define N 2048
+#define N 1024
 
 __global__ void matrixMul(float *A, float *B, float *C, float *D, float *E, float *F, int n) {
 
@@ -146,6 +146,6 @@ int main(){
         std::cout << "Throughput: " << tflops << " TFLOPS" << std::endl;
     }
     std::cout << "-----------------------------------------------" << std::endl;
-    std::cout << "CPU Execution Time: " << seconds << " cpu_seconds" << std::endl;
+    std::cout << "CPU Execution Time: " << cpu_seconds << " cpu_seconds" << std::endl;
     std::cout << "-----------------------------------------------" << std::endl;
 }
