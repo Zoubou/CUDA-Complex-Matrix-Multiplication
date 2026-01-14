@@ -11,3 +11,6 @@ A high-performance CUDA implementation of $N \times N$ complex matrix multiplica
 1. **Compile**:
    ```bash
    nvcc -O3 matrixMul.cu -o matrixMul
+1. **Run**:
+   ```bash
+   ./matrixMul
