@@ -131,7 +131,7 @@ int main(){
     auto start_cpu = std::chrono::high_resolution_clock::now();
 
     std::cout << "Calculating CPU reference..." << std::endl;
-    cpu_matrixMul(A, B, C, D, cpu_E, cpu_F, N);
+    cpu_matrixMul(A, B, C, D, E, F, N);
 
     auto end_cpu = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> diff_cpu = end_cpu - start_cpu;
