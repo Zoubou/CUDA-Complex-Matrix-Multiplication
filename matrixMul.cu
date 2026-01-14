@@ -8,14 +8,15 @@
 
 #define N 1024
 
-__global__ void matrixMul(float *A, float *B, float *C, float *D, float *E, float *F){
+__global__ void matrixMul(float *A, float *B, float *C, float *D, float *E, float *F, int N){
 
 	int row = blockIdx.x * blockDim.x + threadIdx.x;
 	int col = blockIdx.y * blockDim.y + threadIdx.y;
 
 	if (row < N && col < N) {
-    		E[row][col] = A[row][col]*C[row][col] - B[row][col]*D[row][col];
-		F[row][col] = A[row][col]*D[row][col] + B[row][col]*C[row][col];
+		for()
+    		E[row * N + col] = A[row * N + col]*C[row * N + col] - B[row * N + col]*D[row * N + col];
+		F[row * N + col] = A[row * N + col]*D[row * N + col] + B[row * N + col]*C[row * N + col];
 	}
 }
 
@@ -39,7 +40,7 @@ int main(){
     float *dev_E;
     float *dev_F;
 
-    for(int i=0; i<N; i++){
+    for(int i=0; i<N-1; i++){
         for(int j=0; j<N; j++){
 	    A[i * N + j] = (float)rand() / (float)RAND_MAX;
 	    B[i * N + j] = (float)rand() / (float)RAND_MAX;
@@ -65,16 +66,17 @@ int main(){
 
     std::cout << "Launching kernels on GPU\n";
 
-    int tile_size = 32;
+    int TILE_SIZE = 32;
 
     dim3 nthreads(TILE_SIZE, TILE_SIZE);
 
     int gridDim = (N + TILE_SIZE - 1) / TILE_SIZE;
     dim3 nblocks(gridDim, gridDim);
 
-    matrixMul <<< nblocks, nthreads >>>(dev_A, dev_B, dev_C, dev_D, dev_E, dev_F);
+    matrixMul <<< nblocks, nthreads >>>(dev_A, dev_B, dev_C, dev_D, dev_E, dev_F, N);
 
     std::cout << "Downloadng data...\n";
 
-
+    cudaMemcpy(E, dev_E, N * N * sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(F, dev_F, N * N * sizeof(float), cudaMemcpyDeviceToHost);
 }
