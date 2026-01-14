@@ -32,6 +32,22 @@ __global__ void matrixMul(float *A, float *B, float *C, float *D, float *E, floa
     }
 }
 
+void cpu_matrixMul(float *A, float *B, float *C, float *D, float *E_cpu, float *F_cpu, int n) {
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            float sumE = 0;
+            float sumF = 0;
+            for (int k = 0; k < n; ++k) {
+                // (A + Bi)(C + Di) = (AC - BD) + (AD + BC)i
+                sumE += A[i * n + k] * C[k * n + j] - B[i * n + k] * D[k * n + j];
+                sumF += A[i * n + k] * D[k * n + j] + B[i * n + k] * C[k * n + j];
+            }
+            E_cpu[i * n + j] = sumE;
+            F_cpu[i * n + j] = sumF;
+        }
+    }
+}
+
 int main(){
     //Host vars
     float *A = new float[N*N];
@@ -94,14 +110,39 @@ int main(){
     // Wait for GPU to finish before downloading data
     cudaDeviceSynchronize();
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> diff = end - start;
-    double seconds = diff.count();
-
     std::cout << "Downloadng data...\n";
 
     cudaMemcpy(E, dev_E, N * N * sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(F, dev_F, N * N * sizeof(float), cudaMemcpyDeviceToHost);
 
+    //GPU Flops/s and throughput
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diff = end - start;
+    double seconds = diff.count();
 
+    double N_val = static_cast<double>(N);
+    double total_flops = 8.0 * N_val * N_val * N_val;
+
+    double flops_per_second = total_flops / seconds;
+    double gflops = flops_per_second / 1e9; 
+    double tflops = flops_per_second / 1e12; 
+
+    //CPU throughput
+    auto start_cpu = std::chrono::high_resolution_clock::now();
+
+    cpu_matrixMul(cpu_A, cpu_B, cpu_C, cpu_D, cpu_E, cpu_F, N);
+
+    auto end_cpu = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diff_cpu = end_cpu - start_cpu;
+    double cpu_seconds = diff_cpu.count();
+
+    std::cout << "-----------------------------------------------" << std::endl;
+    std::cout << "Matrix Size N: " << N << " x " << N << std::endl;
+    std::cout << "Execution Time: " << seconds << " seconds" << std::endl;
+    std::cout << "Total FLOPs: " << total_flops << std::endl;
+    std::cout << "Throughput: " << gflops << " GFLOPS" << std::endl;
+    if (tflops > 1.0) {
+        std::cout << "Throughput: " << tflops << " TFLOPS" << std::endl;
+    }
+    std::cout << "-----------------------------------------------" << std::endl;
 }
