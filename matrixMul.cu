@@ -8,18 +8,29 @@
 
 #define N 1024
 
-__global__ void matrixMul(float *A, float *B, float *C, float *D, float *E, float *F, int N){
+__global__ void matrixMul(float *A, float *B, float *C, float *D, float *E, float *F, int n) {
 
-	int row = blockIdx.x * blockDim.x + threadIdx.x;
-	int col = blockIdx.y * blockDim.y + threadIdx.y;
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
 
-	if (row < N && col < N) {
-		for()
-    		E[row * N + col] = A[row * N + col]*C[row * N + col] - B[row * N + col]*D[row * N + col];
-		F[row * N + col] = A[row * N + col]*D[row * N + col] + B[row * N + col]*C[row * N + col];
-	}
+    if (row < n && col < n) {
+        float sumE = 0.0f;
+        float sumF = 0.0f;
+
+        for (int k = 0; k < n; ++k) {
+            float a = A[row * n + k];
+            float b = B[row * n + k];
+            float c = C[k * n + col];
+            float d = D[k * n + col];
+
+            sumE += (a * c - b * d);
+            sumF += (a * d + b * c);
+        }
+
+        E[row * n + col] = sumE;
+        F[row * n + col] = sumF;
+    }
 }
-
 
 int main(){
     //Host vars
