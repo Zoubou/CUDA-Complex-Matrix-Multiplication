@@ -138,11 +138,13 @@ int main(){
 
     std::cout << "-----------------------------------------------" << std::endl;
     std::cout << "Matrix Size N: " << N << " x " << N << std::endl;
-    std::cout << "Execution Time: " << seconds << " seconds" << std::endl;
+    std::cout << "GPU Execution Time: " << seconds << " seconds" << std::endl;
     std::cout << "Total FLOPs: " << total_flops << std::endl;
     std::cout << "Throughput: " << gflops << " GFLOPS" << std::endl;
     if (tflops > 1.0) {
         std::cout << "Throughput: " << tflops << " TFLOPS" << std::endl;
     }
+    std::cout << "-----------------------------------------------" << std::endl;
+    std::cout << "CPU Execution Time: " << seconds << " cpu_seconds" << std::endl;
     std::cout << "-----------------------------------------------" << std::endl;
 }
