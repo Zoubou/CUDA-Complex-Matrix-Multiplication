@@ -148,4 +148,16 @@ int main(){
     std::cout << "-----------------------------------------------" << std::endl;
     std::cout << "CPU Execution Time: " << cpu_seconds << " cpu_seconds" << std::endl;
     std::cout << "-----------------------------------------------" << std::endl;
+
+    std::cout << "Cleaning up memory..." << std::endl;
+
+    // Device Free
+    cudaFree(dev_A); cudaFree(dev_B); cudaFree(dev_C);
+    cudaFree(dev_D); cudaFree(dev_E); cudaFree(dev_F);
+
+    // Host Free
+    delete[] A; delete[] B; delete[] C; 
+    delete[] D; delete[] E; delete[] F;
+
+    return 0;
 }
