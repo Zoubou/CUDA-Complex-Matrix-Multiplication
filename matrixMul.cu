@@ -130,7 +130,8 @@ int main(){
     //CPU throughput
     auto start_cpu = std::chrono::high_resolution_clock::now();
 
-    cpu_matrixMul(cpu_A, cpu_B, cpu_C, cpu_D, cpu_E, cpu_F, N);
+    std::cout << "Calculating CPU reference..." << std::endl;
+    cpu_matrixMul(A, B, C, D, cpu_E, cpu_F, N);
 
     auto end_cpu = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> diff_cpu = end_cpu - start_cpu;
