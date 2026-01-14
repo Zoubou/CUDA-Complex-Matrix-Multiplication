@@ -6,7 +6,7 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 
-#define N 1024
+#define N 2048
 
 __global__ void matrixMul(float *A, float *B, float *C, float *D, float *E, float *F, int n) {
 
@@ -84,6 +84,8 @@ int main(){
     int gridDim = (N + TILE_SIZE - 1) / TILE_SIZE;
     dim3 blocksPerGrid(gridDim, gridDim);
 
+    auto start = std::chrono::high_resolution_clock::now();
+
     matrixMul <<< blocksPerGrid, threadsPerBlock >>>(dev_A, dev_B, dev_C, dev_D, dev_E, dev_F, N);
 
     cudaError_t err = cudaGetLastError();
@@ -91,6 +93,10 @@ int main(){
 
     // Wait for GPU to finish before downloading data
     cudaDeviceSynchronize();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diff = end - start;
+    double seconds = diff.count();
 
     std::cout << "Downloadng data...\n";
 
