@@ -79,15 +79,23 @@ int main(){
 
     int TILE_SIZE = 32;
 
-    dim3 nthreads(TILE_SIZE, TILE_SIZE);
+    dim3 threadsPerBlock(TILE_SIZE, TILE_SIZE);
 
     int gridDim = (N + TILE_SIZE - 1) / TILE_SIZE;
-    dim3 nblocks(gridDim, gridDim);
+    dim3 blocksPerGrid(gridDim, gridDim);
 
-    matrixMul <<< nblocks, nthreads >>>(dev_A, dev_B, dev_C, dev_D, dev_E, dev_F, N);
+    matrixMul <<< blocksPerGrid, threadsPerBlock >>>(dev_A, dev_B, dev_C, dev_D, dev_E, dev_F, N);
+
+    cudaError_t err = cudaGetLastError();
+    if (err != cudaSuccess) printf("Error: %s\n", cudaGetErrorString(err));
+
+    // Wait for GPU to finish before downloading data
+    cudaDeviceSynchronize();
 
     std::cout << "Downloadng data...\n";
 
     cudaMemcpy(E, dev_E, N * N * sizeof(float), cudaMemcpyDeviceToHost);
     cudaMemcpy(F, dev_F, N * N * sizeof(float), cudaMemcpyDeviceToHost);
+
+
 }
